@@ -1,0 +1,9 @@
+{
+  "address": {
+    "city": "New York",
+    "country": "USA"
+  },
+  "age": 26,
+  "grade": "A",
+  "name": "John Smith"
+}
