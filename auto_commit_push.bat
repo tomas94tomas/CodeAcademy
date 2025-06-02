@@ -24,14 +24,14 @@ REM Commit
 echo 📝 Committing...
 git commit -m "%commit_msg%"
 
-REM Get first available remote (like origin or github)
+REM Get first available remote safely
 for /f %%r in ('git remote') do (
-    set remote_name=%%r
-    goto done_remote
+    set "remote_name=%%r"
+    goto found_remote
 )
 
-:done_remote
-if "%remote_name%"=="" (
+:found_remote
+if not defined remote_name (
     echo ❌ No git remote found. Use: git remote add origin <url>
     pause
     exit /b
@@ -41,5 +41,5 @@ REM Push to remote main branch
 echo 🚀 Pushing to !remote_name!/main...
 git push !remote_name! main
 
-echo ✅ Done! All changes pushed.
+echo ✅ Done! All changes pushed to !remote_name!/main
 pause
