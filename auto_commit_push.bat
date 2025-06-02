@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Check if we're inside a Git repo
+REM Check if inside a Git repo
 git rev-parse --is-inside-work-tree >nul 2>&1
 if errorlevel 1 (
     echo ❌ Not inside a Git repository.
@@ -16,7 +16,7 @@ git checkout main
 REM Ask for commit message
 set /p commit_msg=Enter commit message: 
 
-REM Stage all changes (add, modify, delete)
+REM Stage all changes
 echo 📦 Staging all changes...
 git add -A
 
@@ -24,20 +24,19 @@ REM Commit
 echo 📝 Committing...
 git commit -m "%commit_msg%"
 
-REM Get first available remote safely
+REM Get first available remote (avoiding GOTO for PowerShell compatibility)
+set remote_name=
 for /f %%r in ('git remote') do (
-    set "remote_name=%%r"
-    goto found_remote
+    if not defined remote_name set remote_name=%%r
 )
 
-:found_remote
 if not defined remote_name (
     echo ❌ No git remote found. Use: git remote add origin <url>
     pause
     exit /b
 )
 
-REM Push to remote main branch
+REM Push to remote
 echo 🚀 Pushing to !remote_name!/main...
 git push !remote_name! main
 
