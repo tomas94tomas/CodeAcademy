@@ -1,0 +1,27 @@
+Task: How to check why an SQL query is slow
+
+1. First, run the query manually and see if it’s actually slow or if the app is slow for some other reason.
+
+2. Use EXPLAIN to check how the DB is processing it.
+
+Example:
+EXPLAIN SELECT * FROM Books WHERE author_id = 2;
+
+3. Look at output:
+- Seq Scan = bad if you have a lot of rows
+- Index Scan = good
+- Cost = higher = slower
+
+4. If there's no index, add one:
+CREATE INDEX idx_author_id ON Books(author_id);
+
+5. Run EXPLAIN again and see if it uses the index now.
+
+6. Still slow? Try ANALYZE:
+EXPLAIN ANALYZE SELECT * FROM Books WHERE author_id = 2;
+
+That actually runs the query and shows real times.
+
+7. If the table is huge and always slow, maybe archive old rows or split into smaller tables.
+
+Done.
