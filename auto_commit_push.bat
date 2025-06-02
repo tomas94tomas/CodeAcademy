@@ -24,21 +24,18 @@ REM Commit
 echo 📝 Committing...
 git commit -m "%commit_msg%"
 
-REM Get first available remote (avoiding GOTO for PowerShell compatibility)
-set remote_name=
+REM Get first remote name safely using a temp file
 for /f %%r in ('git remote') do (
-    if not defined remote_name set remote_name=%%r
+    echo %%r > tmp_remote.txt
+    goto :got_remote
 )
-
-if not defined remote_name (
-    echo ❌ No git remote found. Use: git remote add origin <url>
-    pause
-    exit /b
-)
+:got_remote
+set /p remote_name=<tmp_remote.txt
+del tmp_remote.txt
 
 REM Push to remote
-echo 🚀 Pushing to !remote_name!/main...
-git push !remote_name! main
+echo 🚀 Pushing to %remote_name%/main...
+git push %remote_name% main
 
-echo ✅ Done! All changes pushed to !remote_name!/main
+echo ✅ Done! All changes pushed to %remote_name%/main
 pause
