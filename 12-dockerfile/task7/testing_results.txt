@@ -1,0 +1,3 @@
+PS E:\DevOps\Project\dockerfiles_assignment\task7> docker run --rm --mount type=bind,source="$(pwd)\secret.txt",target=/run/secrets/mysecret node-secret
+Runtime secret: SuperSecretBuildValue123
+PS E:\DevOps\Project\dockerfiles_assignment\task7> 

@@ -1,0 +1,11 @@
+# syntax=docker/dockerfile:1.4
+FROM node:18
+
+WORKDIR /app
+COPY index.js .
+
+# Simulate using secret at build time (e.g., npm login, etc.)
+RUN --mount=type=secret,id=mysecret \
+    sh -c 'echo "Build secret: $(cat /run/secrets/mysecret)"'
+
+CMD ["node", "index.js"]

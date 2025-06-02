@@ -1,0 +1,10 @@
+# Stage 1: Build
+FROM gcc AS builder
+WORKDIR /src
+COPY main.c .
+RUN gcc -static -o hello main.c
+
+# Stage 2: Run
+FROM alpine
+COPY --from=builder /src/hello /hello
+CMD ["/hello"]
