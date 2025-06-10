@@ -1,0 +1,29 @@
+---
+- name: Install Apache
+  apt:
+    name: "{{ apache_package }}"
+    state: present
+  become: yes
+
+- name: Ensure Apache is listening on the right port
+  lineinfile:
+    path: /etc/apache2/ports.conf
+    regexp: '^Listen'
+    line: "Listen {{ apache_port }}"
+  notify: restart apache
+  become: yes
+
+- name: Start Apache
+  service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Save Apache admin password to file
+  ansible.builtin.copy:
+    dest: /tmp/apache_admin_pass.txt
+    content: "{{ apache_admin_password }}"
+    owner: root
+    group: root
+    mode: '0600'
