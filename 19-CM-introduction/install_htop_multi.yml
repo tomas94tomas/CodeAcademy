@@ -1,0 +1,9 @@
+---
+- name: Install htop on all hosts
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure htop is installed
+      apt:
+        name: htop
+        state: present
