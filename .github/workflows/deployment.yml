@@ -1,0 +1,47 @@
+name: Build docker image and deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-image:latest
+
+      #- name: Set up SSH key
+      #  uses: shimataro/ssh-key-action@v2
+      #  with:
+      #    key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #    known_hosts: unnecessary
+
+     # - name: Add known hosts
+     #   run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      #- name: Deploy docker-compose.yml to remote
+       # run: rsync -avz -e "ssh -p 22" ./docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }}:/path/to/project
+
+      #- name: SSH and run docker-compose
+      #  run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} -p 22 "cd /path/to/project && docker-compose up -d"
