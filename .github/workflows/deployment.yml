@@ -111,11 +111,18 @@ jobs:
       - name: Verify container status
         run: |
           ssh -i ~/.ssh/id_deploy_key -o StrictHostKeyChecking=no -p 22 ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} << 'EOF'
-            echo " Checking running containers..."
-            docker ps | grep my-image || (echo "Container not running!" && exit 1)
-
+            echo "Checking running containers..."
+            if ! docker ps | grep my-image; then
+              echo "Container not running!"
+              exit 1
+            fi
+      
             echo "Curling localhost:8080..."
-            curl -s -f http://localhost:8080 || (echo "App not responding!" && exit 1)
-
+            if ! curl -s -f http://localhost:8080; then
+              echo "App not responding!"
+              exit 1
+            fi
+      
             echo "App is up and healthy!"
           EOF
+
