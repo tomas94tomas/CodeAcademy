@@ -1,4 +1,4 @@
-github action trigger.
+github action trigger
 ```
 ╔═══════════════════════════════╗
 ║     Tomas Dz. DevOps Repo     ║
