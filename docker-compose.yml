@@ -1,0 +1,5 @@
+services:
+  app:
+    image: tomas011/my-image:latest
+    ports:
+      - "8080:80"
