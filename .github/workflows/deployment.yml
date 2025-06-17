@@ -90,3 +90,23 @@ jobs:
           ssh -i ~/.ssh/id_deploy_key -o StrictHostKeyChecking=no -p 22 \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} \
             "cd /home/${{ secrets.SSH_USERNAME }}/my-app && docker compose up -d"
+# ────────────────────────────────
+# 4) POST-DEPLOYMENT CHECK (runs after deploy)
+# ────────────────────────────────
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Wait for the container to boot
+        run: sleep 10
+
+      - name: Check HTTP response
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ secrets.HOST }}:8080)
+          if [ "$STATUS" -eq 200 ]; then
+            echo "✅ App is live!"
+          else
+            echo "❌ App is not responding properly (HTTP $STATUS)"
+            exit 1
+          fi
