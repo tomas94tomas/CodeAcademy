@@ -43,5 +43,5 @@ jobs:
       - name: Deploy docker-compose.yml to remote
         run: rsync -avz -e "ssh -p 22" ./docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }}:/path/to/project
 
-      #- name: SSH and run docker-compose
-      #  run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} -p 22 "cd /path/to/project && docker-compose up -d"
+      - name: SSH and run docker-compose
+        run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} -p 22 "cd /path/to/project && docker-compose up -d"
