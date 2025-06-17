@@ -91,22 +91,31 @@ jobs:
             ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} \
             "cd /home/${{ secrets.SSH_USERNAME }}/my-app && docker compose up -d"
 # ────────────────────────────────
-# 4) POST-DEPLOYMENT CHECK (runs after deploy)
+# 4) VERIFY (runs after deploy)
 # ────────────────────────────────
   verify:
     needs: deploy
     runs-on: ubuntu-latest
 
     steps:
-      - name: Wait for the container to boot
-        run: sleep 10
+      - name: Set up SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          name: id_deploy_key
+          known_hosts: unnecessary
 
-      - name: Check HTTP response
+      - name: Add known hosts
+        run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Verify container status
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ secrets.HOST }}:8080)
-          if [ "$STATUS" -eq 200 ]; then
-            echo "✅ App is live!"
-          else
-            echo "❌ App is not responding properly (HTTP $STATUS)"
-            exit 1
-          fi
+          ssh -i ~/.ssh/id_deploy_key -o StrictHostKeyChecking=no -p 22 ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} << 'EOF'
+            echo " Checking running containers..."
+            docker ps | grep my-image || (echo "Container not running!" && exit 1)
+
+            echo "Curling localhost:8080..."
+            curl -s -f http://localhost:8080 || (echo "App not responding!" && exit 1)
+
+            echo "App is up and healthy!"
+          EOF
