@@ -41,8 +41,8 @@ jobs:
       - name: Add known hosts
         run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy docker-compose.yml to remote
-        run: rsync -avz -e "ssh -i ~/.ssh/id_deploy_key -o StrictHostKeyChecking=no -p 22" ./docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }}:/home/${{ secrets.SSH_USERNAME }}/my-app
+      - name: SSH and run docker-compose
+        run: ssh -i ~/.ssh/id_deploy_key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} -p 22 "cd /home/${{ secrets.SSH_USERNAME }}/my-app && docker compose up -d"
 
       - name: SSH and run docker-compose
         run: ssh -i ~/.ssh/id_deploy_key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} -p 22 "cd /home/${{ secrets.SSH_USERNAME }}/my-app && docker-compose up -d"
