@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask-SocketIO Chat</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+    <h2>Flask-SocketIO Chat</h2>
+    <input id="username" placeholder="Your name" />
+    <input id="message" placeholder="Type message..." autocomplete="off"/>
+    <button onclick="sendMessage()">Send</button>
+    <ul id="messages"></ul>
+    <script>
+        var socket = io();
+        var username = "";
+
+        document.getElementById('username').addEventListener('blur', function() {
+            username = this.value || "Anonymous";
+        });
+
+        function sendMessage() {
+            if (!username) {
+                username = document.getElementById('username').value || "Anonymous";
+            }
+            var input = document.getElementById('message');
+            var msg = username + ": " + input.value;
+            socket.send(msg);
+            input.value = '';
+        }
+
+        socket.on('message', function(msg){
+            var li = document.createElement("li");
+            li.textContent = msg;
+            document.getElementById('messages').appendChild(li);
+        });
+    </script>
+</body>
+</html>
